@@ -1,6 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react';
-import { FormControl, InputLabel, Select, MenuItem } from '@mui/material';
+import { FormControl, Select, MenuItem } from '@mui/material';
 
 const AgentDropdown = () => {
     const [agents, setAgents] = useState([]);
@@ -27,9 +27,8 @@ const AgentDropdown = () => {
         <FormControl width="50px" variant="filled">
             <Select
                 value={selectedAgent}
-                onChange={handleChange}
-                label="Select Agent"
-            >
+                onChange={handleChange}         
+                >
                 {agents.map((agent) => (
                     <MenuItem key={agent.uuid} value={agent.uuid}>
                         <img src={agent.displayIcon} alt={agent.displayName} style={{ width: 50, height: 50, marginRight: 10 }}/>

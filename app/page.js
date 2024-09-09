@@ -1,22 +1,42 @@
-// 'use client'
-// import Image from "next/image";
-// import styles from "./page.module.css";
-// import { useState, useEffect } from 'react'
-// import { firestore } from '@/firebase'
-// import { Box, Modal, Typography, Stack, TextField, Button, Pagination } from '@mui/material'
-// import { collection, deleteDoc, getDoc, getDocs, query, setDoc, doc } from "firebase/firestore"
 'use client'
 import Image from "next/image";
-import styles from "./page.module.css";
-import { useState } from 'react';
+import { useState, useEffect} from 'react';
 import { AppBar, Box, Button, Container, CssBaseline, Drawer, Stack, Pagination, IconButton, List, ListItem, ListItemText, ListItemButton, Toolbar, Typography } from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu';
+import MenuIcon from '@mui/icons-material/MenuOutlined';
 import AgentDropdown from "./agentdropdown";
 
 export default function Home() {
     const [page, setPage] = useState(1);
     const [bgImage, setBgImage] = useState('')
     const [drawerOpen, setDrawerOpen] = useState(false);
+
+    // Save data to localStorage
+const saveRoundData = (roundNumber, playerName, firstKill, firstDeath) => {
+    const roundData = {
+        roundNumber,
+        playerName,
+        firstKill,
+        firstDeath
+    };
+    
+    const currentData = JSON.parse(localStorage.getItem('roundsData')) || [];
+    currentData.push(roundData);
+    localStorage.setItem('roundsData', JSON.stringify(currentData));
+};
+
+// Fetch data from localStorage
+const fetchRoundData = () => {
+    return JSON.parse(localStorage.getItem('roundsData')) || [];
+};
+
+    const handleFirstKill = (roundNumber, playerName) => {
+        saveRoundData(roundNumber, playerName, true, false);
+    };
+
+    const handleFirstDeath = (roundNumber, playerName) => {
+        saveRoundData(roundNumber, playerName, false, true);
+    };
+
 
     const handlePageChange = async (event, value) => {
       setPage(value);
@@ -135,11 +155,34 @@ export default function Home() {
         </Box>
     );
 
+    const AgentActions = ({ roundNumber, playerName }) => (
+        <Box>
+            <Button
+                variant='contained'
+                sx={{ backgroundColor: 'green', color: 'white', margin: '5px' }}
+                onClick={() => handleFirstKill(roundNumber, playerName)}
+            >
+                First Kill
+            </Button>
+            <Button
+                sx={{ backgroundColor: 'red', color: 'white', margin: '5px' }}
+                onClick={() => handleFirstDeath(roundNumber, playerName)}
+            >
+                First Death
+            </Button>
+        </Box>
+    );
+    useEffect(() => {
+        const data = fetchRoundData();
+        console.log('Loaded data:', data);
+        // Process and display the data as needed
+    }, []);
+    
+
     return (
         <Box sx={{ display: 'flex' }}>
             <CssBaseline />
-            <AppBar position="fixed"
-            sx={{backgroundColor: "#8E8274" }}>
+            <AppBar position="fixed" sx={{backgroundColor: "#8E8274" }}>
                 <Toolbar>
                     <IconButton
                         edge="start"
@@ -151,9 +194,9 @@ export default function Home() {
                       <Image 
                         src="/abstract.svg"
                         alt="PAM Icon"
-                        width={48}  // Set the desired width
-                        height={48}  // Set the desired height
-                        />
+                        width={48} 
+                        height={48}  
+                      />
                     </IconButton>
                     <Typography variant="h6" noWrap component="div">
                         PAM - #1 Valorant Analyst Tool
@@ -172,7 +215,6 @@ export default function Home() {
                 component="main"
                 sx={{ flexGrow: 1, bgcolor: '#2D5267', p: 3, mt: 8 }}
             >
-
                 <Container maxWidth="lg">
                     <Box 
                         width="100%"
@@ -210,17 +252,50 @@ export default function Home() {
                             </Typography>
                         </Box>
                         <Stack 
-                            width="500px"
-                            height="400px" 
+                            width="100%"
+                            height="100%" 
                             spacing={2} 
                             alignItems="Center"
                         >
-                            <AgentDropdown />
-                            <AgentDropdown />
-                            <AgentDropdown />
-                            <AgentDropdown />
-                            <AgentDropdown />
-                            
+                            <Box 
+                                width='100%'
+                                height = '100px'
+                                display='flex'
+                                alignItems='center'
+                                justifyContent="space-evenly"
+                                padding={4}
+                                sx={{backgroundColor: "rgba(45, 62, 80, 0.8)", // Replace with your desired color
+                                    borderRadius: "8px", // Optional, for rounded corners
+                                    padding: "8px", // Add some padding
+                                    boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.3)" // Optional shadow
+                                }}>
+                                <AgentDropdown />
+                                <AgentActions roundNumber={page} playerName="player1" />
+                                <AgentDropdown />
+                                <AgentActions roundNumber={page} playerName="player2" />
+                                <AgentDropdown />
+                                <AgentActions roundNumber={page} playerName="player3" />
+                                <AgentDropdown />
+                                <AgentActions roundNumber={page} playerName="player4" />
+                                <AgentDropdown />
+                                <AgentActions roundNumber={page} playerName="player5" />
+                            </Box>
+                            <Box 
+                                width='100%'
+                                height = '100px'
+                                display='flex'
+                                alignItems='center'
+                                justifyContent="space-evenly"
+                                padding={4}
+                                sx={{backgroundColor: "rgba(45, 62, 80, 0.8)", // Replace with your desired color
+                                    borderRadius: "8px", // Optional, for rounded corners
+                                    padding: "8px", // Add some padding
+                                    boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.3)" // Optional shadow
+                                }}>
+                                    <Typography variant = 'h5' color='#333' textAlign='center'>
+                                        
+                                    </Typography>
+                            </Box>
                         </Stack>
                     </Box>
                     <Pagination 
